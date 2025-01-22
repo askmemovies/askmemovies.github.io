@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random User Generator</title>
+</head>
+<style>
+    body{
+        background-color: black;
+        color: white;
+        height: 720px;
+    }
+    h1{
+        top: 0px;
+        margin: 0px;
+        padding: 0px;
+        left: 0px;
+        width: 100%;
+        height: 50px;
+    }
+    #user{
+        border-color: rgb(0, 255, 13);
+        position: relative;
+    }
+    #options{
+        border-color: white;
+        border-radius: 3px;
+        position: relative;
+        height: 120px;
+        width: 480px;
+    }
+    #details{
+        position: absolute;
+        left: 360px;
+        top: 5px;
+        padding: 90px;
+    }
+    #detail{
+        font-size: 25px;
+        width: 100%;
+        height: 480px;
+        animation: scroll-top 10s linear infinite;
+    }
+    td{
+        padding-top: 30px;
+    }
+    @keyframes scroll-top {
+            0% {
+                transform: translateY(100%);
+            }
+
+            100% {
+                transform: translateY(-100%);
+            }
+    }
+    @media only screen and (max-width: 600px) {
+    #details{
+        position: absolute;
+        left: 90px;
+        top: 400px;
+        padding: 60px;
+    }
+  }
+</style>
+<body>
+    <div>
+        <h1><center>Random User Generator</center></h1>
+        <div id="user"></div>
+        <div id="details"></div>
+        <div id="options"><br><br><br>
+        <button style="position:relative;height:50px;width:180px;font-size:30px;left:240px;" onclick="goAll()">Get User</button>
+        <center><p style="position:absolute;top:40px;font-size:30px;left:50vw;">OR</p></center>
+        <form onsubmit="getUser()">
+            <p style="position:absolute;top:40px;font-size:30px;left:920px;top:10px;">
+                ID <input id="eid" style="height:40px;top:10px;font-size:30px;" type="number" name="eid">
+                <input style="position:relative;font-size:30px;height:40px;top:10px;" type="button" onclick="getUser()" value="submit">
+            </p>
+            <p style="position:absolute;font-size:30px;left:920px;top:180px;">
+                Gender <input id="gid" style="height:40px;top:10px;font-size:30px;" type="text" name="gid">
+                <input style="position:relative;font-size:30px;height:40px;top:10px;" type="button" onclick="getGUser()" value="submit">
+            </p>
+        </form>
+        </div>
+        <script>
+            let users = "";
+            let count = 0;
+            async function getData(){
+                let response = await fetch('/db.json');
+                let collection = await response.json();
+                let users = collection["details"];
+                return users;
+            }
+            async function getUser(){
+                try{
+                    users = await getData();
+                    let eid = document.getElementById("eid").value;
+                    let index = users
+                        .findIndex(item => item.userid === eid.toString());
+                        console.log(index);
+                    if (index !== -1) {
+                        count = index;
+                        await fetchData();
+                    } else {
+                        console.log("Item not found");
+                    }
+                }
+                catch(errr){
+                    console.log(errr);
+                }
+            }
+            async function getGUser(){
+                try{
+                    users = await getData();
+                    let gid = document.getElementById("gid").value;
+                    let index = users
+                        .filter(item => item.details[4] === gid.toString());
+                    if (index !== -1) {
+                        users = index;
+                        await fetchData();
+                    } else {
+                        console.log("Item not found");
+                    }
+                }
+                catch(errr){
+                    console.log(errr);
+                }
+            }
+            async function goBack(){
+                count = count - 1;
+                await fetchData();
+            }
+            async function goNext(){
+                count = count + 1;
+                await fetchData();
+            }
+            async function goAll(){
+                users = await getData();
+                await fetchData();
+            }
+            let userContainer = document.getElementById('user');   <!--- or document.getElementById('user').innerhtml = "";--->
+            let detailsContainer = document.getElementById('details');
+            async function fetchData(){
+                try{
+                    if (count >= 0) {
+                        document.getElementById('options').innerHTML = "<button style='font-size:18px;height:25px;margin-left:0px;' onclick='goBack()'>Previous</button><button style='font-size:18px;height:25px;margin-left:140px;' onclick='goNext()'>Next</button>";
+                    }
+                    //let users = await getData();
+                    let user = users[count]["details"];
+                    userContainer.innerHTML = `<img src="/images/${user[76]}" style="height:360px;width:280px;" /><h1>${user[3]}</h1> <br> `;
+                    let detailing = `
+                    <div id='detail'>
+                        <table>
+                            <tr>
+                                <td>ID</td><td>: ${user[0]}</td>
+                            </tr>
+                            <tr>
+                                <td>Full Name</td><td>: ${user[3]} ${user[1]} ${user[2]}</td>
+                            </tr>
+                            <tr>
+                                <td>Gender</td><td>: ${user[4]}</td>
+                            </tr>
+                            <tr>
+                                <td>Date of Birth</td><td>: ${user[5]}</td>
+                            </tr>
+                            <tr>
+                                <td>Date of Join</td><td>: ${user[6]}</td>
+                            </tr>
+                            <tr>
+                                <td>Father / Hus. Name</td><td>: ${user[13]}</td>
+                            </tr>
+                            <tr>
+                                <td>ESI No.</td><td>: ${user[9]}</td>
+                            </tr>
+                            <tr>
+                                <td>PF No.</td><td>: ${user[12]}</td>
+                            </tr>
+                            <tr>
+                                <td>UAN No.</td><td>: ${user[80]}</td>
+                            </tr>
+                            <tr>
+                                <td>Aadhar No.</td><td>: ${user[82]}</td>
+                            </tr>
+                            <tr>
+                                <td>Bank Name</td><td>: ${user[69]}</td>
+                            </tr>
+                            <tr>
+                                <td>Bank Acc. No.</td><td>: ${user[31]}</td>
+                            </tr>
+                            <tr>
+                                <td>IFSC Code</td><td>: ${user[87]}</td>
+                            </tr>
+                            <tr>
+                                <td>Branch</td><td>: ${user[88]}</td>
+                            </tr>
+                            <tr>
+                                <td>Blood Group</td><td>: ${user[32]}</td>
+                            </tr>
+                            <tr>
+                                <td>Father Name</td><td>: ${user[33]}</td>
+                            </tr>
+                            <tr>
+                                <td>Father Age</td><td>: ${user[34]}</td>
+                            </tr>
+                            <tr>
+                                <td>Mother Name</td><td>: ${user[35]}</td>
+                            </tr>
+                            <tr>
+                                <td>Contact No.</td><td>: ${user[38]}, ${user[40]}</td>
+                            </tr>
+                            <tr>
+                                <td>Email</td><td>: ${user[65]}</td>
+                            </tr>
+                            <tr>
+                                <td>Fresher / Exp.</td><td>: ${user[66]}</td>
+                            </tr>
+                            <tr>
+                                <td>User ID</td><td>: ${user[22]}</td>
+                            </tr>
+                            <tr>
+                                <td>Password</td><td>: ${user[23]}</td>
+                            </tr>
+                        </table>
+                    </div>
+                    `
+                    detailsContainer.innerHTML = detailing;
+                }
+                catch(err){
+                    console.log(err);
+                }
+            }
+        </script>
+    </div>
+</body>
+</html>
