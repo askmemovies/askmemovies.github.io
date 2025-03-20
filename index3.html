@@ -80,6 +80,10 @@
                 Gender <input id="gid" style="height:40px;top:10px;font-size:30px;" type="text" name="gid">
                 <input style="position:relative;font-size:30px;height:40px;top:10px;" type="button" onclick="getGUser()" value="submit">
             </p>
+            <p style="position:absolute;font-size:30px;left:920px;top:360px;">
+                Name <input id="nid" style="height:40px;top:10px;font-size:30px;" type="text" name="nid">
+                <input style="position:relative;font-size:30px;height:40px;top:10px;" type="button" onclick="getNUser()" value="submit">
+            </p>
         </form>
         </div>
         <script>
@@ -126,6 +130,26 @@
                     console.log(errr);
                 }
             }
+
+            async function getNUser(){
+                try{
+                    users = await getData();
+                    let nid = document.getElementById("nid").value;
+                    let index = users
+                        .filter(item => item.details[3].toUpperCase().includes(nid.toString().toUpperCase()));
+                    if (index !== -1) {
+                        users = index;
+                        console.log(users);
+                        await fetchData();
+                    } else {
+                        console.log("Item not found");
+                    }
+                }
+                catch(errr){
+                    console.log(errr);
+                }
+            }
+
             async function goBack(){
                 count = count - 1;
                 await fetchData();
